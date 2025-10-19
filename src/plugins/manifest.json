@@ -1,0 +1,15 @@
+[
+  {
+    "name": "py_echo",
+    "command": "python",
+    "args": ["src/plugins/external/python/echo.py"]
+  },
+  {
+    "name": "c_echo",
+    "command": "src/plugins/external/c/echo.exe"
+  },
+  {
+    "name": "cpp_echo",
+    "command": "src/plugins/external/cpp/echo.exe"
+  }
+]

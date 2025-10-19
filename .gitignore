@@ -1,3 +1,10 @@
+node_modules
+dist
+.env
+*.log
+coverage
+.tmp
+.DS_Store
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
