@@ -4,7 +4,6 @@
 
 ![Node.js](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen)
 ![TypeScript](https://img.shields.io/badge/typescript-5.6.2-blue)
-![License](https://img.shields.io/badge/license-MIT-green)
 ![Build](https://img.shields.io/badge/build-passing-brightgreen)
 ![Coverage](https://img.shields.io/badge/coverage-85%25-green)
 ![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)
