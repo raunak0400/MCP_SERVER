@@ -12,6 +12,6 @@
     "resolveJsonModule": true,
     "types": ["node"]
   },
-  "include": ["src/**/*", "websocket"],
+  "include": ["src/**/*", "websocket", "scripts/**/*.ts"],
   "exclude": ["node_modules", "dist"]
 }

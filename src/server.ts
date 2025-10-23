@@ -12,6 +12,7 @@ import { createWsHandler } from './handlers/wsHandler.js'
 import { errorHandler } from './middleware/errorHandler.js'
 import { McpServer } from './core/mcpServer.js'
 import { initMetrics, requestMetrics } from './utils/metrics.js'
+import { rateLimit } from './middleware/rateLimit.js'
 
 const logger = createLogger(config.logLevel)
 const app = express()
@@ -20,6 +21,8 @@ app.use(express.json())
 // initialize metrics and instrument all requests
 initMetrics()
 app.use(requestMetrics())
+// apply a sensible global rate limit (60 req capacity with 1 token/sec refill per IP)
+app.use(rateLimit({ capacity: 60, refillPerSec: 1, key: 'ip' }))
 
 const server = http.createServer(app)
 const container = new Container()
