@@ -18,7 +18,9 @@
     "check:health": "ts-node scripts/health-check.ts",
     "metrics:dump": "ts-node scripts/metrics-dump.ts",
     "ws:send": "ts-node scripts/ws-send.ts --message 'hello from cli'",
-    "plugin:run": "ts-node scripts/run-plugin.ts --plugin sample --action time"
+    "plugin:run": "ts-node scripts/run-plugin.ts --plugin sample --action time",
+    "build:plugins": "bash scripts/build-plugins.sh",
+    "build:plugins:win": "scripts\\build-plugins.bat"
   },
   "dependencies": {
     "dotenv": "^16.4.5",
