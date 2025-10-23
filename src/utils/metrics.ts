@@ -4,7 +4,6 @@ import type { Request, Response, NextFunction } from 'express'
 
 type Counter = number
 type Histogram = number[]
-
 type RouteKey = string // method path, e.g. GET /health
 
 export type MetricsSnapshot = {
