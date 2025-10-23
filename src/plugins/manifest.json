@@ -5,11 +5,29 @@
     "args": ["src/plugins/external/python/echo.py"]
   },
   {
+    "name": "py_data_processor",
+    "command": "python",
+    "args": ["src/plugins/external/python/data_processor.py"]
+  },
+  {
+    "name": "py_analyze",
+    "command": "python",
+    "args": ["src/plugins/external/python/analyze.py"]
+  },
+  {
     "name": "c_echo",
     "command": "src/plugins/external/c/echo.exe"
   },
   {
+    "name": "c_utils",
+    "command": "src/plugins/external/c/utils.exe"
+  },
+  {
     "name": "cpp_echo",
     "command": "src/plugins/external/cpp/echo.exe"
+  },
+  {
+    "name": "cpp_processor",
+    "command": "src/plugins/external/cpp/processor.exe"
   }
 ]
