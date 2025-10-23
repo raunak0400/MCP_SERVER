@@ -11,11 +11,15 @@ import { createRoutes } from './routes/index.js'
 import { createWsHandler } from './handlers/wsHandler.js'
 import { errorHandler } from './middleware/errorHandler.js'
 import { McpServer } from './core/mcpServer.js'
+import { initMetrics, requestMetrics } from './utils/metrics.js'
 
 const logger = createLogger(config.logLevel)
 const app = express()
 app.use(helmet())
 app.use(express.json())
+// initialize metrics and instrument all requests
+initMetrics()
+app.use(requestMetrics())
 
 const server = http.createServer(app)
 const container = new Container()
