@@ -6,11 +6,19 @@
   "main": "dist/server.js",
   "scripts": {
     "build": "tsc -p tsconfig.json",
+    "build:watch": "tsc -w -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "dev:debug": "node --inspect -r ts-node/register src/server.ts",
     "start": "node dist/server.js",
+    "start:prod": "node dist/server.js",
     "lint": "echo no-lint-config",
     "format": "echo no-format-config",
-    "test": "node -e \"console.log('no tests yet')\""
+    "test": "node -e \"console.log('no tests yet')\"",
+    "check:health": "ts-node scripts/health-check.ts",
+    "metrics:dump": "ts-node scripts/metrics-dump.ts",
+    "ws:send": "ts-node scripts/ws-send.ts --message 'hello from cli'",
+    "plugin:run": "ts-node scripts/run-plugin.ts --plugin sample --action time"
   },
   "dependencies": {
     "dotenv": "^16.4.5",
