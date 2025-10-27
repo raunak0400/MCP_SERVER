@@ -4,6 +4,12 @@ type Events = {
   started: []
   pluginLoaded: [string]
   pluginExecuted: [string, string]
+  // Task lifecycle events
+  taskCreated: [any]
+  taskUpdated: [any]
+  taskDeleted: [any]
+  taskCompleted: [any]
+  taskFailed: [any]
 }
 
 export class EventBus {

@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import jwt from 'jsonwebtoken'
+import * as jwt from 'jsonwebtoken'
 import { UserService, CreateUserDTO } from '../services/userService.js'
 import { z } from 'zod'
 import { createLogger } from '../utils/logger.js'
@@ -23,18 +23,18 @@ const loginSchema = z.object({
 export class AuthController {
   // Generate JWT token
   private generateToken(userId: string): string {
-    const secret = process.env.JWT_SECRET || 'your-secret-key'
+    const secret: jwt.Secret = (process.env.JWT_SECRET || 'your-secret-key') as jwt.Secret
     const expiresIn = process.env.JWT_EXPIRES_IN || '7d'
-    
-    return jwt.sign({ userId }, secret, { expiresIn })
+
+    return (jwt as any).sign({ userId }, secret, { expiresIn })
   }
 
   // Generate refresh token
   private generateRefreshToken(userId: string): string {
-    const secret = process.env.REFRESH_TOKEN_SECRET || 'your-refresh-token-secret'
+    const secret: jwt.Secret = (process.env.REFRESH_TOKEN_SECRET || 'your-refresh-token-secret') as jwt.Secret
     const expiresIn = process.env.REFRESH_TOKEN_EXPIRES_IN || '30d'
-    
-    return jwt.sign({ userId }, secret, { expiresIn })
+
+    return (jwt as any).sign({ userId }, secret, { expiresIn })
   }
 
   // Register new user
@@ -176,7 +176,7 @@ export class AuthController {
       }
 
       const secret = process.env.REFRESH_TOKEN_SECRET || 'your-refresh-token-secret'
-      const decoded: any = jwt.verify(refreshToken, secret)
+  const decoded: any = (jwt as any).verify(refreshToken, secret)
 
       // Verify user still exists and is active
       const user = await userService.findById(decoded.userId)

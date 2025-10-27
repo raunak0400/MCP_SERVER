@@ -69,7 +69,12 @@ export class DatabaseService {
       }
 
       const start = Date.now()
-      await mongoose.connection.db.admin().ping()
+      // mongoose.connection.db may be undefined during shutdown/early startup
+      const db = mongoose.connection.db
+      if (!db) {
+        return { status: 'disconnected' }
+      }
+      await db.admin().ping()
       const latency = Date.now() - start
 
       return {
@@ -89,9 +94,14 @@ export class DatabaseService {
       // but we can ensure they're created here
       logger.info('Ensuring database indexes...')
       
-      const collections = await mongoose.connection.db.collections()
-      for (const collection of collections) {
-        await collection.createIndexes()
+  const db2 = mongoose.connection.db
+  if (!db2) return
+  const collections = await db2.collections()
+  for (const collection of collections) {
+        // createIndexes has a strict signature in the types — call via any to avoid typing issues
+        if ((collection as any).createIndexes) {
+          await (collection as any).createIndexes()
+        }
       }
       
       logger.info('✅ Database indexes ensured')
