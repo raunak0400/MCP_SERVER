@@ -8,6 +8,8 @@ import { Container } from './core/container.js'
 import { EventBus } from './core/eventBus.js'
 import { SchedulerService } from './services/schedulerService.js'
 import { PluginService } from './services/pluginService.js'
+import { DatabaseService } from './services/databaseService.js'
+import { connectRedis, redisClient } from './cache/redis.js'
 import { createRoutes } from './routes/index.js'
 import { createWsHandler } from './handlers/wsHandler.js'
 import { errorHandler } from './middleware/errorHandler.js'
@@ -37,12 +39,35 @@ const container = new Container()
 const events = new EventBus()
 const scheduler = new SchedulerService(logger)
 const plugins = new PluginService(logger, events)
+const db = new DatabaseService()
 
+// Connect to external services first
+const connectedDb = await db.connect()
+if (!connectedDb) {
+  logger.error('Database connection failed, aborting startup')
+  process.exit(1)
+}
+
+// ensure indexes
+await db.createIndexes()
+
+// connect redis (best-effort)
+try {
+  await connectRedis()
+  logger.info('✅ Redis connected')
+} catch (err: any) {
+  logger.warn('Redis connection failed (continuing without cache):', err.message)
+}
+
+// Load plugins after DB is ready
 await plugins.loadAll()
+
 container.register('logger', logger)
 container.register('events', events)
 container.register('scheduler', scheduler)
 container.register('plugins', plugins)
+container.register('db', db)
+container.register('redis', redisClient)
 container.register('mcp', new McpServer(plugins, events))
 
 app.use(createRoutes(container))
@@ -74,6 +99,19 @@ const shutdown = async (signal: string) => {
   })
   
   scheduler.stop()
+  try {
+    await db.disconnect()
+    logger.info('Database disconnected')
+  } catch (err: any) {
+    logger.warn('Error disconnecting database:', err.message)
+  }
+
+  try {
+    await redisClient.disconnect()
+    logger.info('Redis disconnected')
+  } catch (err: any) {
+    logger.warn('Error disconnecting redis:', err.message)
+  }
   
   setTimeout(() => {
     logger.error('Forced shutdown after timeout')
