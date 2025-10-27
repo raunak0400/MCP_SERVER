@@ -1,5 +1,6 @@
 import express from 'express'
 import helmet from 'helmet'
+import cors from 'cors'
 import http from 'http'
 import config from './config/index.js'
 import { createLogger } from './utils/logger.js'
@@ -16,8 +17,15 @@ import { rateLimit } from './middleware/rateLimit.js'
 
 const logger = createLogger(config.logLevel)
 const app = express()
+
+// Security and parsing middleware
 app.use(helmet())
+app.use(cors({
+  origin: config.isProd ? process.env.CORS_ORIGIN || false : '*',
+  credentials: true
+}))
 app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
 // initialize metrics and instrument all requests
 initMetrics()
 app.use(requestMetrics())
@@ -44,7 +52,45 @@ createWsHandler(server, events)
 
 scheduler.start()
 
-server.listen(config.port, () => {
-  logger.info(`server listening ${config.port}`)
-  events.emit('started')
+const startServer = async () => {
+  try {
+    server.listen(config.port, () => {
+      logger.info(`MCP Server listening on port ${config.port}`)
+      logger.info(`Environment: ${config.env}`)
+      events.emit('started')
+    })
+  } catch (error) {
+    logger.error('Failed to start server', error)
+    process.exit(1)
+  }
+}
+
+// Graceful shutdown
+const shutdown = async (signal: string) => {
+  logger.info(`${signal} received, starting graceful shutdown`)
+  
+  server.close(() => {
+    logger.info('HTTP server closed')
+  })
+  
+  scheduler.stop()
+  
+  setTimeout(() => {
+    logger.error('Forced shutdown after timeout')
+    process.exit(1)
+  }, 10000)
+}
+
+process.on('SIGTERM', () => shutdown('SIGTERM'))
+process.on('SIGINT', () => shutdown('SIGINT'))
+
+process.on('unhandledRejection', (reason, promise) => {
+  logger.error('Unhandled Rejection at:', promise, 'reason:', reason)
 })
+
+process.on('uncaughtException', (error) => {
+  logger.error('Uncaught Exception:', error)
+  process.exit(1)
+})
+
+startServer()

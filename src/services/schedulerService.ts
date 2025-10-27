@@ -1,7 +1,7 @@
 import { Logger } from '../utils/logger.js'
 
 export class SchedulerService {
-  private timer: NodeJS.Timer | null = null
+  private timer: NodeJS.Timeout | null = null
   constructor(private logger: Logger) {}
   start() {
     if (this.timer) return
